@@ -1895,8 +1895,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 		end
 
 		-- Section
-		-- aka a glorified textlabel
-		function Tab:CreateSection(SectionName, SectionFontSize)
+		function Tab:CreateSection(SectionName)
 
 			local SectionValue = {}
 
@@ -1908,7 +1907,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 			local Section = Elements.Template.SectionTitle:Clone()
 			Section.Title.Text = SectionName
-			Section.Title.TextSize = SectionFontSize
 			Section.Visible = true
 			Section.Parent = TabPage
 
@@ -1943,11 +1941,12 @@ function RayfieldLibrary:CreateWindow(Settings)
 		end
 
 		-- Label
-		function Tab:CreateLabel(LabelText)
+		function Tab:CreateLabel(LabelText, LabelFontSize)
 			local LabelValue = {}
 
 			local Label = Elements.Template.Label:Clone()
 			Label.Title.Text = LabelText
+			Label.Title.TextSize = LabelFontSize
 			Label.Visible = true
 			Label.Parent = TabPage
 
