@@ -13,8 +13,8 @@ zombi.dev | Programming (the Fork)
 
 local InterfaceBuild = 'U8B1'
 local Release = "Build 1.48"
-local RayfieldFolder = "Rayfield"
-local ConfigurationFolder = RayfieldFolder.."/CustomMinus/Configurations"
+local RayfieldFolder = "Rayfield/CustomMinus"
+local ConfigurationFolder = RayfieldFolder.."/Configurations"
 local ConfigurationExtension = ".rfldm"
 
 
