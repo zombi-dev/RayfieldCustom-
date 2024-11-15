@@ -5,6 +5,7 @@ by Sirius
 
 shlex | Designing + Programming
 iRay  | Programming
+zombi.dev | Programming (the Fork)
 
 ]]
 
@@ -13,8 +14,8 @@ iRay  | Programming
 local InterfaceBuild = 'U8B1'
 local Release = "Build 1.48"
 local RayfieldFolder = "Rayfield"
-local ConfigurationFolder = RayfieldFolder.."/Configurations"
-local ConfigurationExtension = ".rfld"
+local ConfigurationFolder = RayfieldFolder.."/CustomMinus/Configurations"
+local ConfigurationExtension = ".rfldm"
 
 
 
@@ -423,6 +424,7 @@ local buildAttempts = 0
 local correctBuild = false
 local warned
 
+-- i have no idea why is this like this
 repeat
 	if Rayfield:FindFirstChild('Build') and Rayfield.Build.Value == InterfaceBuild then
 		correctBuild = true
@@ -443,8 +445,10 @@ repeat
 	buildAttempts = buildAttempts + 1
 until buildAttempts >= 2
 
+-- aww :(
 Rayfield.Enabled = false
 
+-- yay more stuff i have no idea does
 if gethui then
 	Rayfield.Parent = gethui()
 elseif syn and syn.protect_gui then 
@@ -495,7 +499,7 @@ local dragInteract = dragBar and dragBar.Interact or nil
 local dragBarCosmetic = dragBar and dragBar.Drag or nil
 
 Rayfield.DisplayOrder = 100
-LoadingFrame.Version.Text = Release
+LoadingFrame.Version.Text = Release (Forked)
 
 
 
@@ -1160,9 +1164,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 	LoadingFrame.Title.Text = Settings.LoadingTitle or "Rayfield"
 	LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "Interface Suite"
 
-	if Settings.LoadingTitle ~= "Rayfield Interface Suite" then
-		LoadingFrame.Version.Text = "Rayfield UI"
-	end
+	LoadingFrame.Version.Text = ""
 
 	if dragBar then
 		dragBar.Visible = false
@@ -1186,20 +1188,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 	Topbar.Visible = false
 	Elements.Visible = false
 	LoadingFrame.Visible = true
-
-	if not Settings.DisableRayfieldPrompts then
-		task.spawn(function()
-			while true do
-				task.wait(math.random(180, 600))
-				RayfieldLibrary:Notify({
-					Title = "Rayfield Interface",
-					Content = "Enjoying this UI library? Find it at sirius.menu/discord",
-					Duration = 7,
-					Image = 4370033185,
-				})
-			end
-		end)
-	end
 
 	pcall(function()
 		if not Settings.ConfigurationSaving.FileName then
@@ -1464,6 +1452,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 	Notifications.Template.Visible = false
 	Notifications.Visible = true
+	-- yay :)
 	Rayfield.Enabled = true
 	
 	task.wait(0.5)
