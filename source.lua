@@ -499,7 +499,7 @@ local dragInteract = dragBar and dragBar.Interact or nil
 local dragBarCosmetic = dragBar and dragBar.Drag or nil
 
 Rayfield.DisplayOrder = 100
-LoadingFrame.Version.Text = Release (Forked)
+LoadingFrame.Version.Text = "Release (Forked)"
 
 
 
