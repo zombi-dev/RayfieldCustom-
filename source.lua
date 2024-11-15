@@ -13,7 +13,7 @@ print("v1")
 
 local InterfaceBuild = 'U8B1'
 local Release = "Build 1.48"
-local RayfieldFolder = "Rayfield/CustomMinus"
+local RayfieldFolder = "Rayfield"
 local ConfigurationFolder = RayfieldFolder.."/Configurations"
 local ConfigurationExtension = ".rfldm"
 
