@@ -1964,6 +1964,9 @@ function RayfieldLibrary:CreateWindow(Settings)
 			function LabelValue:Set(NewLabel)
 				Label.Title.Text = NewLabel
 			end
+			function LabelValue:Destroy()
+				Label:Destroy()
+			end
 
 			Rayfield.Main:GetPropertyChangedSignal('BackgroundColor3'):Connect(function()
 				Label.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
