@@ -9,7 +9,7 @@ zombi.dev | Programming (the Fork)
 
 ]]
 
-print("v2")
+print("v3")
 
 local InterfaceBuild = 'U8B1'
 local Release = "Build 1.48"
@@ -488,6 +488,7 @@ end
 
 -- Object Variables
 
+local Inactive = false
 local Main = Rayfield.Main
 local MPrompt = Rayfield:FindFirstChild('Prompt')
 local Topbar = Main.Topbar
@@ -866,7 +867,7 @@ local function Hide(notify: boolean?)
 	task.spawn(closeSearch)
 
 	Debounce = true
-	Window.Inactive = true
+	Inactive = true
 	if notify then
 		if useMobileSizing then
 			RayfieldLibrary:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping 'Show Rayfield'.", Duration = 7, Image = 4400697855})
@@ -938,7 +939,7 @@ end
 
 local function Maximise()
 	Debounce = true
-	Window.Inactive = false
+	Inactive = false
 	Topbar.ChangeSize.Image = "rbxassetid://"..10137941941
 
 	TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Transparency = 1}):Play()
@@ -1004,7 +1005,7 @@ end
 
 local function Unhide()
 	Debounce = true
-	Window.Inactive = false
+	Inactive = false
 	Main.Position = UDim2.new(0.5, 0, 0.5, 0)
 	Main.Visible = true
 	TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Size = useMobileSizing and UDim2.new(0, 500, 0, 275) or UDim2.new(0, 500, 0, 475)}):Play()
@@ -1086,7 +1087,7 @@ end
 
 local function Minimise()
 	Debounce = true
-	Window.Inactive = true
+	Inactive = true
 	Topbar.ChangeSize.Image = "rbxassetid://"..11036884234
 
 	Topbar.UIStroke.Color = SelectedTheme.ElementStroke
@@ -1476,10 +1477,12 @@ function RayfieldLibrary:CreateWindow(Settings)
 	Elements.UIPageLayout.FillDirection = Enum.FillDirection.Horizontal
 	TabList.Template.Visible = false
 	
+	Window.Inactive = Inactive
+
 	-- Tab
 	local FirstTab = false
 	local Window = {}
-	Window.Inactive = false
+	Inactive = false
 	function Window:CreateTab(Name,Image)
 		local SDone = false
 		local TabButton = TabList.Template:Clone()
