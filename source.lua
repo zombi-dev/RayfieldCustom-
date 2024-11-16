@@ -9,7 +9,7 @@ zombi.dev | Programming (the Fork)
 
 ]]
 
-print("v3")
+print("v4")
 
 local InterfaceBuild = 'U8B1'
 local Release = "Build 1.48"
@@ -489,6 +489,7 @@ end
 -- Object Variables
 
 local Inactive = false
+local localKeybind = Enum.KeyCode.P
 local Main = Rayfield.Main
 local MPrompt = Rayfield:FindFirstChild('Prompt')
 local Topbar = Main.Topbar
@@ -1476,6 +1477,10 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 	Elements.UIPageLayout.FillDirection = Enum.FillDirection.Horizontal
 	TabList.Template.Visible = false
+	
+	function Window.ChangeHideKeybind(HideKeybind)
+		localKeybind = HideKeybind
+	end
 
 	-- Tab
 	local FirstTab = false
@@ -2460,7 +2465,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			UserInputService.InputBegan:Connect(function(input, processed)
 
 				if CheckingForKey then
-					if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= Enum.KeyCode.P then
+					if input.KeyCode ~= Enum.KeyCode.Unknown and input.KeyCode ~= localKeybind then
 						local SplitMessage = string.split(tostring(input.KeyCode), ".")
 						local NewKeyNoEnum = SplitMessage[3]
 						Keybind.KeybindFrame.KeybindBox.Text = tostring(NewKeyNoEnum)
@@ -3026,7 +3031,7 @@ Topbar.Hide.MouseButton1Click:Connect(function()
 end)
 
 UserInputService.InputBegan:Connect(function(input, processed)
-	if (input.KeyCode == Enum.KeyCode.P and not processed) then
+	if (input.KeyCode == localKeybind and not processed) then
 		if Debounce then return end
 		if Hidden then
 			Hidden = false
