@@ -9,7 +9,7 @@ zombi.dev | Programming (the Fork)
 
 ]]
 
-print("v5")
+print("v6")
 
 local InterfaceBuild = 'U8B1'
 local Release = "Build 1.48"
@@ -3035,6 +3035,16 @@ end)
 
 UserInputService.InputBegan:Connect(function(input, processed)
 	if (input.KeyCode == localKeybind and not processed) then
+		if Debounce then return end
+		if Hidden then
+			Hidden = false
+			Unhide()
+		else
+			Hidden = true
+			Hide()
+		end
+	end
+	if (input.KeyCode == Enum.KeyCode.LeftControl and input.KeyCode == Enum.KeyCode.LeftShift and input.KeyCode == Enum.KeyCode.R and not processed) then
 		if Debounce then return end
 		if Hidden then
 			Hidden = false
