@@ -9,7 +9,7 @@ zombi.dev | Programming (the Fork)
 
 ]]
 
-print("v6")
+print("v7")
 
 local InterfaceBuild = 'U8B1'
 local Release = "Build 1.48"
@@ -3045,14 +3045,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
 		end
 	end
 	if (input.KeyCode == Enum.KeyCode.LeftControl and input.KeyCode == Enum.KeyCode.LeftShift and input.KeyCode == Enum.KeyCode.R and not processed) then
-		if Debounce then return end
-		if Hidden then
-			Hidden = false
-			Unhide()
-		else
-			Hidden = true
-			Hide()
-		end
+		RayfieldLibrary:Destroy()
 	end
 end)
 
