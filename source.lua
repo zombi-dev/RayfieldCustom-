@@ -1476,13 +1476,11 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 	Elements.UIPageLayout.FillDirection = Enum.FillDirection.Horizontal
 	TabList.Template.Visible = false
-	
-	Window.Inactive = Inactive
 
 	-- Tab
 	local FirstTab = false
 	local Window = {}
-	Inactive = false
+	Window.Inactive = Inactive
 	function Window:CreateTab(Name,Image)
 		local SDone = false
 		local TabButton = TabList.Template:Clone()
