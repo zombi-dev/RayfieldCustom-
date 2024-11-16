@@ -490,6 +490,7 @@ end
 
 local Inactive = false
 local localKeybind = Enum.KeyCode.P
+local localKeybindString = "P"
 local Main = Rayfield.Main
 local MPrompt = Rayfield:FindFirstChild('Prompt')
 local Topbar = Main.Topbar
@@ -873,7 +874,7 @@ local function Hide(notify: boolean?)
 		if useMobileSizing then
 			RayfieldLibrary:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping 'Show Rayfield'.", Duration = 7, Image = 4400697855})
 		else
-			RayfieldLibrary:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping P.", Duration = 7, Image = 4400697855})
+			RayfieldLibrary:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping "..tostring(localKeybindString)..".", Duration = 7, Image = 4400697855})
 		end
 	end
 
@@ -1478,8 +1479,9 @@ function RayfieldLibrary:CreateWindow(Settings)
 	Elements.UIPageLayout.FillDirection = Enum.FillDirection.Horizontal
 	TabList.Template.Visible = false
 	
-	function Window.ChangeHideKeybind(HideKeybind)
+	function Window.ChangeHideKeybind(HideKeybind, HideKeybindString)
 		localKeybind = HideKeybind
+		localKeybindString = HideKeybindString
 	end
 
 	-- Tab
