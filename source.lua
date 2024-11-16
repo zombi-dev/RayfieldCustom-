@@ -1479,6 +1479,9 @@ function RayfieldLibrary:CreateWindow(Settings)
 	Elements.UIPageLayout.FillDirection = Enum.FillDirection.Horizontal
 	TabList.Template.Visible = false
 	
+
+	local Window = {}
+	Window.Inactive = Inactive
 	function Window.ChangeHideKeybind(HideKeybind, HideKeybindString)
 		localKeybind = HideKeybind
 		localKeybindString = HideKeybindString
@@ -1486,8 +1489,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 	-- Tab
 	local FirstTab = false
-	local Window = {}
-	Window.Inactive = Inactive
 	function Window:CreateTab(Name,Image)
 		local SDone = false
 		local TabButton = TabList.Template:Clone()
