@@ -761,7 +761,17 @@ function RayfieldLibrary:Notify(data) -- action e.g open messages
 		-- Set Data
 		newNotification.Title.Text = data.Title or "Unknown Title"
 		newNotification.Description.Text = data.Content or "Unknown Content"
-		newNotification.Icon.Image = "rbxassetid://" .. (data.Image or 0)
+		local asset
+		if data.Image then
+			if typeof(Image) == 'string' then
+				asset = getIcon(Image).id
+			else
+				asset = data.Image
+			end
+		else
+			asset = 0
+		end
+		newNotification.Icon.Image = "rbxassetid://" .. asset
 
 		-- Set initial transparency values
 
