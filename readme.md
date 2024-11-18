@@ -1,5 +1,5 @@
 # BASED OFF RAYFIELD VERSION: v1.53
-## (Commit [`bd3ce5fd50e3308927462f60e7544631acfe82b3`](https://github.com/SiriusSoftwareLtd/Rayfield/commit/bd3ce5fd50e3308927462f60e7544631acfe82b3))
+## (Based off Rayfield commit [`bd3ce5fd50e3308927462f60e7544631acfe82b3`](https://github.com/SiriusSoftwareLtd/Rayfield/commit/bd3ce5fd50e3308927462f60e7544631acfe82b3))
 ## Current `RayfieldCustom-` Build: 10
 
 # IF YOU ARE LOOKING FOR THE ORIGINAL RAYFIELD
