@@ -12,7 +12,7 @@ zombi.dev | Programming (the Fork)
 print("v8")
 
 local InterfaceBuild = 'U8B1'
-local Release = "Build 1.5"
+local Release = "Build 1.51"
 local RayfieldFolder = "Rayfield"
 local ConfigurationFolder = RayfieldFolder.."/Configurations"
 local ConfigurationExtension = ".rfldm"
@@ -483,13 +483,23 @@ if Rayfield.AbsoluteSize.X < minSize.X and Rayfield.AbsoluteSize.Y < minSize.Y t
 	useMobileSizing = true
 end
 
+if UserInputService.TouchEnabled then
+	useMobilePrompt = true
+end
+
 
 
 -- Object Variables
 
+-- window inactive thing
 local Inactive = false
+-- keybind hiding thing
 local localKeybind = Enum.KeyCode.P
 local localKeybindString = "P"
+-- key combo kill thing
+local Key1, Key1Held = Enum.KeyCode.LeftControl, false
+local Key2, Key2Held = Enum.KeyCode.LeftShift, false
+local Key3, Key3Held = Enum.KeyCode.R, false
 local Main = Rayfield.Main
 local MPrompt = Rayfield:FindFirstChild('Prompt')
 local Topbar = Main.Topbar
@@ -652,10 +662,10 @@ local function makeDraggable(object, dragObject, enableTaptic, tapticOffset)
 			local position = UserInputService:GetMouseLocation() + relative + offset
 			if enableTaptic and tapticOffset then
 				TweenService:Create(object, TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.fromOffset(position.X, position.Y)}):Play()
-				TweenService:Create(dragObject.Parent, TweenInfo.new(0.05, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.fromOffset(position.X, position.Y + tapticOffset)}):Play()
+				TweenService:Create(dragObject.Parent, TweenInfo.new(0.05, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Position = UDim2.fromOffset(position.X, position.Y + ((useMobileSizing and tapticOffset[2]) or tapticOffset[1]))}):Play()
 			else
 				if dragBar and tapticOffset then
-					dragBar.Position = UDim2.fromOffset(position.X, position.Y + tapticOffset)
+					dragBar.Position = UDim2.fromOffset(position.X, position.Y + ((useMobileSizing and tapticOffset[2]) or tapticOffset[1]))
 				end
 				object.Position = UDim2.fromOffset(position.X, position.Y)
 			end
@@ -921,7 +931,7 @@ local function Hide(notify: boolean?)
 	Debounce = true
 	Inactive = true
 	if notify then
-		if useMobileSizing then
+		if useMobilePrompt then 
 			RayfieldLibrary:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping 'Show Rayfield'.", Duration = 7, Image = 4400697855})
 		else
 			RayfieldLibrary:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping "..tostring(localKeybindString)..".", Duration = 7, Image = 4400697855})
@@ -939,7 +949,7 @@ local function Hide(notify: boolean?)
 	TweenService:Create(Topbar.UIStroke, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Transparency = 1}):Play()
 	TweenService:Create(dragBarCosmetic, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
 
-	if useMobileSizing and MPrompt then
+	if useMobilePrompt and MPrompt then
 		TweenService:Create(MPrompt, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {Size = UDim2.new(0, 120, 0, 30), Position = UDim2.new(0.5, 0, 0, 20), BackgroundTransparency = 0.3}):Play()
 		TweenService:Create(MPrompt.Title, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {TextTransparency = 0.3}):Play()
 	end
@@ -1270,8 +1280,9 @@ function RayfieldLibrary:CreateWindow(Settings)
 		end
 	end)
 
-	makeDraggable(Main, Topbar, false, 255)
-	if dragBar then makeDraggable(Main, dragInteract, true, 255) end
+	
+	makeDraggable(Main, Topbar, false, {255, 150})
+	if dragBar then dragBar.Position = useMobileSizing and UDim2.new(0.5, 0, 0.5, 150) or UDim2.new(0.5, 0, 0.5, 255) makeDraggable(Main, dragInteract, true, {255, 150}) end
 
 	for _, TabButton in ipairs(TabList:GetChildren()) do
 		if TabButton.ClassName == "Frame" and TabButton.Name ~= "Placeholder" then
@@ -3087,6 +3098,10 @@ Topbar.Hide.MouseButton1Click:Connect(function()
 	setVisibility(Hidden, not useMobileSizing)
 end)
 
+function KeyComboAct()
+	RayfieldLibrary:Destroy()
+end
+
 UserInputService.InputBegan:Connect(function(input, processed)
 	if (input.KeyCode == localKeybind and not processed) then
 		if Debounce then return end
@@ -3098,9 +3113,33 @@ UserInputService.InputBegan:Connect(function(input, processed)
 			Hide()
 		end
 	end
-	if (input.KeyCode == Enum.KeyCode.LeftControl and input.KeyCode == Enum.KeyCode.LeftShift and input.KeyCode == Enum.KeyCode.R and not processed) then
-		RayfieldLibrary:Destroy()
+	if (input.KeyCode == Key1 and not processed) then
+		Key1Held = true
 	end
+	if (input.KeyCode == Key2 and not processed) then
+		Key2Held = true
+	end
+	if (input.KeyCode == Key3 and not processed) then
+		Key3Held = true
+	end
+	if (Key1Held and Key2Held and Key3Held and not processed) then
+		KeyComboAct()
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input, processed)
+	if (input.KeyCode == Key1 and not processed) then
+		Key1Held = false
+	end
+	if (input.KeyCode == Key2 and not processed) then
+		Key2Held = false
+	end
+	if (input.KeyCode == Key3 and not processed) then
+		Key3Held = false
+	end
+	-- if (Key1Held and Key2Held and Key3Held and not processed) then
+	--	KeyComboAct()
+	-- end
 end)
 
 if MPrompt then
@@ -3193,7 +3232,7 @@ if useStudio then
 		}
 	})
 
-	local Tab = Window:CreateTab("Tab Example", 'rewind') -- Title, Image
+	local Tab = Window:CreateTab("Tab Example", 'badge-minus') -- Title, Image
 	local Tab2 = Window:CreateTab("Tab Example 2", 4483362458) -- Title, Image
 
 	local Section = Tab2:CreateSection("Section")
