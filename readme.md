@@ -1,4 +1,4 @@
-# CURRENT RAYFIELD VERSION: v1.5
+# BASED OFF RAYFIELD VERSION: v1.5
 # IF YOU ARE LOOKING FOR THE ORIGINAL RAYFIELD
 - This is a forked version of Rayfield for own (personal) use, that adds/changes a couple things. This also works alongside the actual Rayfield library.
 - See the original: [SiriusSoftwareLtd/Rayfield](https://github.com/SiriusSoftwareLtd/Rayfield)
