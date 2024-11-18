@@ -9,7 +9,7 @@ zombi.dev | Programming (the Fork)
 
 ]]
 
-print("v8")
+print("v1.51 (Build 9)")
 
 local InterfaceBuild = 'U8B1'
 local Release = "Build 1.51"
