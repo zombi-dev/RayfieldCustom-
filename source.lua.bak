@@ -9,10 +9,11 @@ zombi.dev | Programming (the Fork)
 
 ]]
 
-print("v8")
+print("v1.53 (Build 10)")
 
-local InterfaceBuild = 'U8B1'
-local Release = "Build 1.51"
+
+local InterfaceBuild = 'K7GD'
+local Release = "Build 1.53"
 local RayfieldFolder = "Rayfield"
 local ConfigurationFolder = RayfieldFolder.."/Configurations"
 local ConfigurationExtension = ".rfldm"
@@ -491,9 +492,12 @@ end
 
 -- Object Variables
 
+-- window inactive thing
 local Inactive = false
+-- keybind hiding thing
 local localKeybind = Enum.KeyCode.P
 local localKeybindString = "P"
+-- key combo kill thing
 local Key1, Key1Held = Enum.KeyCode.LeftControl, false
 local Key2, Key2Held = Enum.KeyCode.LeftShift, false
 local Key3, Key3Held = Enum.KeyCode.R, false
@@ -525,8 +529,12 @@ local Notifications = Rayfield.Notifications
 
 local SelectedTheme = RayfieldLibrary.Theme.Default
 
-local function ChangeTheme(ThemeName)
-	SelectedTheme = RayfieldLibrary.Theme[ThemeName]
+local function ChangeTheme(Theme)
+	if typeof(Theme) == 'string' then
+		SelectedTheme = RayfieldLibrary.Theme[Theme]
+	elseif typeof(Theme) == 'table' then
+		SelectedTheme = Theme
+	end
 
 	Rayfield.Main.BackgroundColor3 = SelectedTheme.Background
 	Rayfield.Main.Topbar.BackgroundColor3 = SelectedTheme.Topbar
@@ -768,17 +776,20 @@ function RayfieldLibrary:Notify(data) -- action e.g open messages
 		-- Set Data
 		newNotification.Title.Text = data.Title or "Unknown Title"
 		newNotification.Description.Text = data.Content or "Unknown Content"
-		local asset
+
 		if data.Image then
-			if typeof(Image) == 'string' then
-				asset = getIcon(Image).id
+			if typeof(data.Image) == 'string' then
+				local asset = getIcon(data.Image)
+
+				newNotification.Icon.Image = 'rbxassetid://'..asset.id
+				newNotification.Icon.ImageRectOffset = asset.imageRectOffset
+				newNotification.Icon.ImageRectSize = asset.imageRectSize
 			else
-				asset = data.Image
+				newNotification.Icon.Image = "rbxassetid://" .. (data.Image or 0)
 			end
 		else
-			asset = 0
+			newNotification.Icon.Image = "rbxassetid://" .. 0
 		end
-		newNotification.Icon.Image = "rbxassetid://" .. asset
 
 		-- Set initial transparency values
 
@@ -1019,7 +1030,7 @@ local function Maximise()
 				if element.ClassName == "Frame" then
 					if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" then
 						if element.Name == "SectionTitle" or element.Name == 'SearchTitle-fsefsefesfsefesfesfThanks' then
-							TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {TextTransparency = 0}):Play()
+							TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {TextTransparency = 0.4}):Play()
 						elseif element.Name == 'Divider' then
 							TweenService:Create(element.Divider, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {BackgroundTransparency = 0.85}):Play()
 						else
@@ -1118,7 +1129,7 @@ local function Unhide()
 				if element.ClassName == "Frame" then
 					if element.Name ~= "SectionSpacing" and element.Name ~= "Placeholder" then
 						if element.Name == "SectionTitle" or element.Name == 'SearchTitle-fsefsefesfsefesfesfThanks' then
-							TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {TextTransparency = 0}):Play()
+							TweenService:Create(element.Title, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {TextTransparency = 0.4}):Play()
 						elseif element.Name == 'Divider' then
 							TweenService:Create(element.Divider, TweenInfo.new(0.3, Enum.EasingStyle.Exponential), {BackgroundTransparency = 0.85}):Play()
 						else
@@ -1995,7 +2006,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			Section.Parent = TabPage
 
 			Section.Title.TextTransparency = 1
-			TweenService:Create(Section.Title, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {TextTransparency = 0}):Play()
+			TweenService:Create(Section.Title, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {TextTransparency = 0.4}):Play()
 
 			function SectionValue:Set(NewSection)
 				Section.Title.Text = NewSection
@@ -2025,7 +2036,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 		end
 
 		-- Label
-		function Tab:CreateLabel(LabelText, LabelFontSize)
+		function Tab:CreateLabel(LabelText : string, LabelFontSize: number, Icon: number, Color : Color3, IgnoreTheme : boolean)
 			local LabelValue = {}
 
 			local Label = Elements.Template.Label:Clone()
@@ -2034,19 +2045,82 @@ function RayfieldLibrary:CreateWindow(Settings)
 			Label.Visible = true
 			Label.Parent = TabPage
 
-			Label.BackgroundColor3 = SelectedTheme.SecondaryElementBackground
-			Label.UIStroke.Color = SelectedTheme.SecondaryElementStroke
+			Label.BackgroundColor3 = Color or SelectedTheme.SecondaryElementBackground
+			Label.UIStroke.Color = Color or SelectedTheme.SecondaryElementStroke
 
+			if Icon then
+				if typeof(Icon) == 'string' then
+					local asset = getIcon(Icon)
+
+					Label.Icon.Image = 'rbxassetid://'..asset.id
+					Label.Icon.ImageRectOffset = asset.imageRectOffset
+					Label.Icon.ImageRectSize = asset.imageRectSize
+				else
+					Label.Icon.Image = "rbxassetid://" .. (Icon or 0)
+				end
+			else
+				Label.Icon.Image = "rbxassetid://" .. 0
+			end
+
+			if Icon and Label:FindFirstChild('Icon') then
+				Label.Title.Position = UDim2.new(0, 45, 0.5, 0)
+				Label.Title.Size = UDim2.new(1, -100, 0, 14)
+
+				if Icon then
+					if typeof(Icon) == 'string' then
+						local asset = getIcon(Icon)
+
+						Label.Icon.Image = 'rbxassetid://'..asset.id
+						Label.Icon.ImageRectOffset = asset.imageRectOffset
+						Label.Icon.ImageRectSize = asset.imageRectSize
+					else
+						Label.Icon.Image = "rbxassetid://" .. (Icon or 0)
+					end
+				else
+					Label.Icon.Image = "rbxassetid://" .. 0
+				end
+
+				Label.Icon.Visible = true
+			end
+
+			Label.Icon.ImageTransparency = 1
 			Label.BackgroundTransparency = 1
 			Label.UIStroke.Transparency = 1
 			Label.Title.TextTransparency = 1
 
-			TweenService:Create(Label, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {BackgroundTransparency = 0}):Play()
-			TweenService:Create(Label.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {Transparency = 0}):Play()
-			TweenService:Create(Label.Title, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {TextTransparency = 0}):Play()	
+			TweenService:Create(Label, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {BackgroundTransparency = Color and 0.8 or 0}):Play()
+			TweenService:Create(Label.UIStroke, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {Transparency = Color and 0.7 or 0}):Play()
+			TweenService:Create(Label.Icon, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {ImageTransparency = 0.2}):Play()
+			TweenService:Create(Label.Title, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {TextTransparency = Color and 0.2 or 0}):Play()	
 
-			function LabelValue:Set(NewLabel)
+			function LabelValue:Set(NewLabel, Icon, Color)
 				Label.Title.Text = NewLabel
+				
+				if Color then
+					Label.BackgroundColor3 = Color or SelectedTheme.SecondaryElementBackground
+					Label.UIStroke.Color = Color or SelectedTheme.SecondaryElementStroke
+				end
+				
+				if Icon and Label:FindFirstChild('Icon') then
+					Label.Title.Position = UDim2.new(0, 45, 0.5, 0)
+					Label.Title.Size = UDim2.new(1, -100, 0, 14)
+					
+					if Icon then
+						if typeof(Icon) == 'string' then
+							local asset = getIcon(Icon)
+
+							Label.Icon.Image = 'rbxassetid://'..asset.id
+							Label.Icon.ImageRectOffset = asset.imageRectOffset
+							Label.Icon.ImageRectSize = asset.imageRectSize
+						else
+							Label.Icon.Image = "rbxassetid://" .. (Icon or 0)
+						end
+					else
+						Label.Icon.Image = "rbxassetid://" .. 0
+					end
+					
+					Label.Icon.Visible = true
+				end
 			end
 			function LabelValue:Destroy()
 				Label:Destroy()
