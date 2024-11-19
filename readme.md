@@ -1,6 +1,6 @@
-# BASED OFF RAYFIELD VERSION: v1.53
-## (Based off Rayfield commit [`bd3ce5fd50e3308927462f60e7544631acfe82b3`](https://github.com/SiriusSoftwareLtd/Rayfield/commit/bd3ce5fd50e3308927462f60e7544631acfe82b3))
-## Current `RayfieldCustom-` Build: 10
+# BASED OFF RAYFIELD VERSION: v1.54
+## (Based off Rayfield commit [`c6cc588932bd4859d744a8f04520de6b8a0f5b34`](https://github.com/SiriusSoftwareLtd/Rayfield/commit/c6cc588932bd4859d744a8f04520de6b8a0f5b34))
+## Current `RayfieldCustom-` Build: 11
 
 # IF YOU ARE LOOKING FOR THE ORIGINAL RAYFIELD
 - This is a forked version of Rayfield for own (personal) use, that adds/changes a couple things. This also works alongside the actual Rayfield library.

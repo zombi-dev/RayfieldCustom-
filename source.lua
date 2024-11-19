@@ -9,11 +9,11 @@ zombi.dev | Programming (the Fork)
 
 ]]
 
-print("v1.53 (Build 10)")
+print("v1.54 (Build 11)")
 
 
 local InterfaceBuild = 'K7GD'
-local Release = "Build 1.53"
+local Release = "Build 1.54"
 local RayfieldFolder = "Rayfield"
 local ConfigurationFolder = RayfieldFolder.."/Configurations"
 local ConfigurationExtension = ".rfldm"
@@ -501,6 +501,9 @@ local localKeybindString = "P"
 local Key1, Key1Held = Enum.KeyCode.LeftControl, false
 local Key2, Key2Held = Enum.KeyCode.LeftShift, false
 local Key3, Key3Held = Enum.KeyCode.R, false
+-- sory rayfield :)
+local RayfieldAds = false
+-- ok actual rayfield's stuff
 local Main = Rayfield.Main
 local MPrompt = Rayfield:FindFirstChild('Prompt')
 local Topbar = Main.Topbar
@@ -574,7 +577,6 @@ end
 
 local function getIcon(name : string)
 	-- full credit to latte softworks :)
-	
 	local iconData = not useStudio and game:HttpGet('https://raw.githubusercontent.com/latte-soft/lucide-roblox/refs/heads/master/lib/Icons.luau')
 	local icons = useStudio and require(script.Parent.icons) or loadstring(iconData)()
 	
@@ -1103,7 +1105,12 @@ local function Unhide()
 
 	for _, TopbarButton in ipairs(Topbar:GetChildren()) do
 		if TopbarButton.ClassName == "ImageButton" then
-			TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {ImageTransparency = 0.8}):Play()
+			if TopbarButton.Name == 'Icon' then
+				TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {ImageTransparency = 0}):Play()
+			else
+				TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {ImageTransparency = 0.8}):Play()
+			end
+			
 		end
 	end
 
@@ -1239,10 +1246,29 @@ function RayfieldLibrary:CreateWindow(Settings)
 	LoadingFrame.Title.Text = Settings.LoadingTitle or "Rayfield"
 	LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "Interface Suite"
 
-	if Settings.LoadingTitle == "Rayfield Interface Suite" then
+	if Settings.LoadingTitle ~= "Rayfield Interface Suite" and RayfieldAds then
 		LoadingFrame.Version.Text = "Rayfield UI"
 	else
 		LoadingFrame.Version.Text = ""
+	end
+	
+	if Settings.Icon and Settings.Icon ~= 0 and Topbar:FindFirstChild('Icon') then
+		Topbar.Icon.Visible = true
+		Topbar.Title.Position = UDim2.new(0, 47, 0.5, 0)
+
+		if Settings.Icon then
+			if typeof(Settings.Icon) == 'string' then
+				local asset = getIcon(Settings.Icon)
+
+				Topbar.Icon.Image = 'rbxassetid://'..asset.id
+				Topbar.Icon.ImageRectOffset = asset.imageRectOffset
+				Topbar.Icon.ImageRectSize = asset.imageRectSize
+			else
+				Topbar.Icon.Image = "rbxassetid://" .. (Settings.Icon or 0)
+			end
+		else
+			Topbar.Icon.Image = "rbxassetid://" .. 0
+		end
 	end
 
 	if dragBar then
@@ -1267,6 +1293,20 @@ function RayfieldLibrary:CreateWindow(Settings)
 	Topbar.Visible = false
 	Elements.Visible = false
 	LoadingFrame.Visible = true
+
+	if not Settings.DisableRayfieldPrompts and RayfieldAds then
+		task.spawn(function()
+			while true do
+				task.wait(math.random(180, 600))
+				RayfieldLibrary:Notify({
+					Title = "Rayfield Interface",
+					Content = "Enjoying this UI library? Find it at sirius.menu/discord",
+					Duration = 7,
+					Image = 4370033185,
+				})
+			end
+		end)
+	end
 
 	pcall(function()
 		if not Settings.ConfigurationSaving.FileName then
@@ -3224,7 +3264,7 @@ if MPrompt then
 end
 
 for _, TopbarButton in ipairs(Topbar:GetChildren()) do
-	if TopbarButton.ClassName == "ImageButton" then
+	if TopbarButton.ClassName == "ImageButton" and TopbarButton.Name ~= 'Icon' then
 		TopbarButton.MouseEnter:Connect(function()
 			TweenService:Create(TopbarButton, TweenInfo.new(0.7, Enum.EasingStyle.Exponential), {ImageTransparency = 0}):Play()
 		end)
@@ -3234,7 +3274,6 @@ for _, TopbarButton in ipairs(Topbar:GetChildren()) do
 		end)
 	end
 end
-
 
 function RayfieldLibrary:LoadConfiguration()
 	local config
@@ -3280,6 +3319,7 @@ if useStudio then
 		Name = "Rayfield Example Window",
 		LoadingTitle = "Rayfield Interface Suite",
 		Theme = 'Default',
+		Icon = 0,
 		LoadingSubtitle = "by Sirius",
 		ConfigurationSaving = {
 			Enabled = true,
@@ -3492,6 +3532,17 @@ if CEnabled and Main:FindFirstChild('Notice') then
 	TweenService:Create(Main.Notice.Title, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {TextTransparency = 0.1}):Play()
 end
 
+if not useStudio and RayfieldAds then
+	local success, result = pcall(function()
+		loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Sirius/refs/heads/request/boost.lua'))()
+	end)
+	
+	if not success then
+		print('Error with boost file.')
+		print(result)
+	end
+end
+
 task.delay(4, function() 
 	RayfieldLibrary.LoadConfiguration()
 	if Main:FindFirstChild('Notice') and Main.Notice.Visible then 
@@ -3502,6 +3553,5 @@ task.delay(4, function()
 		Main.Notice.Visible = false 
 	end
 end)
-
 
 return RayfieldLibrary
