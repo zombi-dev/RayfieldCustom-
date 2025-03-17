@@ -72,7 +72,7 @@ end
 local requestsDisabled = getgenv and getgenv().DISABLE_RAYFIELD_REQUESTS
 local InterfaceBuild = '3K3W'
 local Release = "Build 1.672"
-local CustomVersion = "13"
+local CustomVersion = "14"
 print(Release.." ("..InterfaceBuild..") - Version "..CustomVersion)
 
 local RayfieldFolder = "Rayfield"
@@ -88,6 +88,7 @@ local settingsTable = {
 
 	},
 	System = {
+		RayfieldAds = {Type = 'toggle', Value = false, Name = 'Rayfield Ads'},
 		usageAnalytics = {Type = 'toggle', Value = true, Name = 'Anonymised Analytics'},
 	}
 }
@@ -118,9 +119,7 @@ local function loadSettings()
 
 			-- for debug in studio
 			if useStudio then
-				file = [[
-		{"General":{"rayfieldOpen":{"Value":"K","Type":"bind","Name":"Rayfield Keybind","Element":{"HoldToInteract":false,"Ext":true,"Name":"Rayfield Keybind","Set":null,"CallOnChange":true,"Callback":null,"CurrentKeybind":"K"}}},"System":{"usageAnalytics":{"Value":false,"Type":"toggle","Name":"Anonymised Analytics","Element":{"Ext":true,"Name":"Anonymised Analytics","Set":null,"CurrentValue":false,"Callback":null}}}}
-	]]
+				file = settingsTable
 			end
 
 
@@ -629,7 +628,6 @@ local correctBuild = false
 local warned
 local globalLoaded
 
--- i have no idea why is this like this
 repeat
 	if Rayfield:FindFirstChild('Build') and Rayfield.Build.Value == InterfaceBuild then
 		correctBuild = true
@@ -697,15 +695,10 @@ end
 
 -- window inactive thing
 local Inactive = false
--- keybind hiding thing
-local localKeybind = Enum.KeyCode.P
-local localKeybindString = "P"
 -- key combo kill thing
 local Key1, Key1Held = Enum.KeyCode.LeftControl, false
 local Key2, Key2Held = Enum.KeyCode.LeftShift, false
 local Key3, Key3Held = Enum.KeyCode.R, false
--- sory rayfield :)
-local RayfieldAds = false
 -- ok actual rayfield's stuff
 local Main = Rayfield.Main
 local MPrompt = Rayfield:FindFirstChild('Prompt')
@@ -1540,6 +1533,7 @@ end
 -- MAKE SURE YOU KNOW WHAT YOU ARE DOING WHEN USING THIS FUNCTION!
 function RayfieldLibrary:AssignSettings(Settings)
 	settingsTable = Settings
+	updateSettings()
 end
 
 function RayfieldLibrary:CreateWindow(Settings)
@@ -1582,7 +1576,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 	LoadingFrame.Title.Text = Settings.LoadingTitle or "Rayfield"
 	LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "Interface Suite"
 
-	if Settings.LoadingTitle ~= "Rayfield Interface Suite" and RayfieldAds then
+	if Settings.LoadingTitle ~= "Rayfield Interface Suite" and cachedSettings.System.RayfieldAds.Value then
 		LoadingFrame.Version.Text = "Rayfield UI"
 	else
 		LoadingFrame.Version.Text = ""
@@ -1630,7 +1624,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 	Elements.Visible = false
 	LoadingFrame.Visible = true
 
-	if not Settings.DisableRayfieldPrompts and RayfieldAds then
+	if not Settings.DisableRayfieldPrompts and cachedSettings.System.RayfieldAds.Value then
 		task.spawn(function()
 			while true do
 				task.wait(math.random(180, 600))
@@ -3966,7 +3960,7 @@ if CEnabled and Main:FindFirstChild('Notice') then
 	TweenService:Create(Main.Notice.Title, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {TextTransparency = 0.1}):Play()
 end
 
-if not useStudio and RayfieldAds then
+if not useStudio and cachedSettings.System.RayfieldAds.Value then
 	local success, result = pcall(function()
 		task.spawn(loadWithTimeout, "https://raw.githubusercontent.com/SiriusSoftwareLtd/Sirius/refs/heads/request/boost.lua")
 	end)
