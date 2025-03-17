@@ -72,12 +72,13 @@ end
 local requestsDisabled = getgenv and getgenv().DISABLE_RAYFIELD_REQUESTS
 local InterfaceBuild = '3K3W'
 local Release = "Build 1.672"
-local CustomVersion = "12"
+local CustomVersion = "13"
 print(Release.." ("..InterfaceBuild..") - Version "..CustomVersion)
 
 local RayfieldFolder = "Rayfield"
 local ConfigurationFolder = RayfieldFolder.."/Configurations"
 local ConfigurationExtension = ".rfldm"
+-- setup default settings
 local settingsTable = {
 	General = {
 		-- if needs be in order just make getSetting(name)
@@ -1536,7 +1537,10 @@ local function createSettings(window)
 	updateSettings()
 end
 
-
+-- MAKE SURE YOU KNOW WHAT YOU ARE DOING WHEN USING THIS FUNCTION!
+function RayfieldLibrary:AssignSettings(Settings)
+	settingsTable = Settings
+end
 
 function RayfieldLibrary:CreateWindow(Settings)
 	if Rayfield:FindFirstChild('Loading') then
