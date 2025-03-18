@@ -72,7 +72,7 @@ end
 local requestsDisabled = getgenv and getgenv().DISABLE_RAYFIELD_REQUESTS
 local InterfaceBuild = '3K3W'
 local Release = "Build 1.672"
-local CustomVersion = "14"
+local CustomVersion = "15"
 print(Release.." ("..InterfaceBuild..") - Version "..CustomVersion)
 
 local RayfieldFolder = "Rayfield"
@@ -128,10 +128,10 @@ local function loadSettings()
 				if success then
 					file = decodedFile
 				else
-					file = {}
+					file = settingsTable
 				end
 			else
-				file = {}
+				file = settingsTable
 			end
 
 
@@ -643,14 +643,13 @@ repeat
 	end
 
 	toDestroy, Rayfield = Rayfield, useStudio and script.Parent:FindFirstChild('Rayfield') or game:GetObjects("rbxassetid://10804731440")[1]
-	if toDestroy and not useStudio then toDestroy:Destroy() end
+	--if toDestroy and not useStudio then toDestroy:Destroy() end
 
 	buildAttempts = buildAttempts + 1
 until buildAttempts >= 2
 
 Rayfield.Enabled = false
 
--- yay more stuff i have no idea does
 if gethui then
 	Rayfield.Parent = gethui()
 elseif syn and syn.protect_gui then 
@@ -3534,6 +3533,7 @@ local hideHotkeyConnection -- Has to be initialized here since the connection is
 function RayfieldLibrary:Destroy()
 	hideHotkeyConnection:Disconnect()
 	Rayfield:Destroy()
+	KeyUI:Destroy()
 end
 
 Topbar.ChangeSize.MouseButton1Click:Connect(function()
