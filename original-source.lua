@@ -68,7 +68,7 @@ local function loadWithTimeout(url: string, timeout: number?): ...any
 	return if success then result else nil
 end
 
-local requestsDisabled = getgenv and getgenv().DISABLE_RAYFIELD_REQUESTS
+local requestsDisabled = true --getgenv and getgenv().DISABLE_RAYFIELD_REQUESTS
 local InterfaceBuild = '3K3W'
 local Release = "Build 1.672"
 local RayfieldFolder = "Rayfield"
@@ -624,7 +624,6 @@ local correctBuild = false
 local warned
 local globalLoaded
 
--- i have no idea why is this like this
 repeat
 	if Rayfield:FindFirstChild('Build') and Rayfield.Build.Value == InterfaceBuild then
 		correctBuild = true
@@ -647,7 +646,6 @@ until buildAttempts >= 2
 
 Rayfield.Enabled = false
 
--- yay more stuff i have no idea does
 if gethui then
 	Rayfield.Parent = gethui()
 elseif syn and syn.protect_gui then 
@@ -690,18 +688,6 @@ end
 
 -- Object Variables
 
--- window inactive thing
-local Inactive = false
--- keybind hiding thing
-local localKeybind = Enum.KeyCode.P
-local localKeybindString = "P"
--- key combo kill thing
-local Key1, Key1Held = Enum.KeyCode.LeftControl, false
-local Key2, Key2Held = Enum.KeyCode.LeftShift, false
-local Key3, Key3Held = Enum.KeyCode.R, false
--- sory rayfield :)
-local RayfieldAds = false
--- ok actual rayfield's stuff
 local Main = Rayfield.Main
 local MPrompt = Rayfield:FindFirstChild('Prompt')
 local Topbar = Main.Topbar
@@ -1574,10 +1560,8 @@ function RayfieldLibrary:CreateWindow(Settings)
 	LoadingFrame.Title.Text = Settings.LoadingTitle or "Rayfield"
 	LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "Interface Suite"
 
-	if Settings.LoadingTitle ~= "Rayfield Interface Suite" and RayfieldAds then
+	if Settings.LoadingTitle ~= "Rayfield Interface Suite" then
 		LoadingFrame.Version.Text = "Rayfield UI"
-	else
-		LoadingFrame.Version.Text = ""
 	end
 
 	if Settings.Icon and Settings.Icon ~= 0 and Topbar:FindFirstChild('Icon') then
@@ -1622,7 +1606,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 	Elements.Visible = false
 	LoadingFrame.Visible = true
 
-	if not Settings.DisableRayfieldPrompts and RayfieldAds then
+	if not Settings.DisableRayfieldPrompts then
 		task.spawn(function()
 			while true do
 				task.wait(math.random(180, 600))
@@ -3845,53 +3829,53 @@ if useStudio then
 		MultipleOptions = false,
 		Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 		Callback = function(Options)
-			Window.ModifyTheme(Options[1])
+			--Window.ModifyTheme(Options[1])
 			-- The function that takes place when the selected option is changed
 			-- The variable (Options) is a table of strings for the current selected options
 		end,
 	})
-	
-	
-	Window.ModifyTheme({
-		TextColor = Color3.fromRGB(50, 55, 60),
-		Background = Color3.fromRGB(240, 245, 250),
-		Topbar = Color3.fromRGB(215, 225, 235),
-		Shadow = Color3.fromRGB(200, 210, 220),
 
-		NotificationBackground = Color3.fromRGB(210, 220, 230),
-		NotificationActionsBackground = Color3.fromRGB(225, 230, 240),
 
-		TabBackground = Color3.fromRGB(200, 210, 220),
-		TabStroke = Color3.fromRGB(180, 190, 200),
-		TabBackgroundSelected = Color3.fromRGB(175, 185, 200),
-		TabTextColor = Color3.fromRGB(50, 55, 60),
-		SelectedTabTextColor = Color3.fromRGB(30, 35, 40),
+	--Window.ModifyTheme({
+	--	TextColor = Color3.fromRGB(50, 55, 60),
+	--	Background = Color3.fromRGB(240, 245, 250),
+	--	Topbar = Color3.fromRGB(215, 225, 235),
+	--	Shadow = Color3.fromRGB(200, 210, 220),
 
-		ElementBackground = Color3.fromRGB(210, 220, 230),
-		ElementBackgroundHover = Color3.fromRGB(220, 230, 240),
-		SecondaryElementBackground = Color3.fromRGB(200, 210, 220),
-		ElementStroke = Color3.fromRGB(190, 200, 210),
-		SecondaryElementStroke = Color3.fromRGB(180, 190, 200),
+	--	NotificationBackground = Color3.fromRGB(210, 220, 230),
+	--	NotificationActionsBackground = Color3.fromRGB(225, 230, 240),
 
-		SliderBackground = Color3.fromRGB(200, 220, 235),  -- Lighter shade
-		SliderProgress = Color3.fromRGB(70, 130, 180),
-		SliderStroke = Color3.fromRGB(150, 180, 220),
+	--	TabBackground = Color3.fromRGB(200, 210, 220),
+	--	TabStroke = Color3.fromRGB(180, 190, 200),
+	--	TabBackgroundSelected = Color3.fromRGB(175, 185, 200),
+	--	TabTextColor = Color3.fromRGB(50, 55, 60),
+	--	SelectedTabTextColor = Color3.fromRGB(30, 35, 40),
 
-		ToggleBackground = Color3.fromRGB(210, 220, 230),
-		ToggleEnabled = Color3.fromRGB(70, 160, 210),
-		ToggleDisabled = Color3.fromRGB(180, 180, 180),
-		ToggleEnabledStroke = Color3.fromRGB(60, 150, 200),
-		ToggleDisabledStroke = Color3.fromRGB(140, 140, 140),
-		ToggleEnabledOuterStroke = Color3.fromRGB(100, 120, 140),
-		ToggleDisabledOuterStroke = Color3.fromRGB(120, 120, 130),
+	--	ElementBackground = Color3.fromRGB(210, 220, 230),
+	--	ElementBackgroundHover = Color3.fromRGB(220, 230, 240),
+	--	SecondaryElementBackground = Color3.fromRGB(200, 210, 220),
+	--	ElementStroke = Color3.fromRGB(190, 200, 210),
+	--	SecondaryElementStroke = Color3.fromRGB(180, 190, 200),
 
-		DropdownSelected = Color3.fromRGB(220, 230, 240),
-		DropdownUnselected = Color3.fromRGB(200, 210, 220),
+	--	SliderBackground = Color3.fromRGB(200, 220, 235),  -- Lighter shade
+	--	SliderProgress = Color3.fromRGB(70, 130, 180),
+	--	SliderStroke = Color3.fromRGB(150, 180, 220),
 
-		InputBackground = Color3.fromRGB(220, 230, 240),
-		InputStroke = Color3.fromRGB(180, 190, 200),
-		PlaceholderColor = Color3.fromRGB(150, 150, 150)
-	})
+	--	ToggleBackground = Color3.fromRGB(210, 220, 230),
+	--	ToggleEnabled = Color3.fromRGB(70, 160, 210),
+	--	ToggleDisabled = Color3.fromRGB(180, 180, 180),
+	--	ToggleEnabledStroke = Color3.fromRGB(60, 150, 200),
+	--	ToggleDisabledStroke = Color3.fromRGB(140, 140, 140),
+	--	ToggleEnabledOuterStroke = Color3.fromRGB(100, 120, 140),
+	--	ToggleDisabledOuterStroke = Color3.fromRGB(120, 120, 130),
+
+	--	DropdownSelected = Color3.fromRGB(220, 230, 240),
+	--	DropdownUnselected = Color3.fromRGB(200, 210, 220),
+
+	--	InputBackground = Color3.fromRGB(220, 230, 240),
+	--	InputStroke = Color3.fromRGB(180, 190, 200),
+	--	PlaceholderColor = Color3.fromRGB(150, 150, 150)
+	--})
 
 	local Keybind = Tab:CreateKeybind({
 		Name = "Keybind Example",
@@ -3923,9 +3907,9 @@ if CEnabled and Main:FindFirstChild('Notice') then
 	TweenService:Create(Main.Notice.Title, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {TextTransparency = 0.1}):Play()
 end
 
-if not useStudio then
-	task.spawn(loadWithTimeout, "https://raw.githubusercontent.com/SiriusSoftwareLtd/Sirius/refs/heads/request/boost.lua")
-end
+-- if not useStudio then
+-- 	task.spawn(loadWithTimeout, "https://raw.githubusercontent.com/SiriusSoftwareLtd/Sirius/refs/heads/request/boost.lua")
+-- end
 
 task.delay(4, function()
 	RayfieldLibrary.LoadConfiguration()

@@ -69,10 +69,10 @@ local function loadWithTimeout(url: string, timeout: number?): ...any
 	return if success then result else nil
 end
 
-local requestsDisabled = getgenv and getgenv().DISABLE_RAYFIELD_REQUESTS
+local requestsDisabled = true --getgenv and getgenv().DISABLE_RAYFIELD_REQUESTS
 local InterfaceBuild = '3K3W'
 local Release = "Build 1.672"
-local CustomVersion = "15"
+local CustomVersion = "16"
 print(Release.." ("..InterfaceBuild..") - Version "..CustomVersion)
 
 local RayfieldFolder = "Rayfield"
@@ -643,7 +643,7 @@ repeat
 	end
 
 	toDestroy, Rayfield = Rayfield, useStudio and script.Parent:FindFirstChild('Rayfield') or game:GetObjects("rbxassetid://10804731440")[1]
-	--if toDestroy and not useStudio then toDestroy:Destroy() end
+	if toDestroy and not useStudio then toDestroy:Destroy() end
 
 	buildAttempts = buildAttempts + 1
 until buildAttempts >= 2
@@ -3533,7 +3533,6 @@ local hideHotkeyConnection -- Has to be initialized here since the connection is
 function RayfieldLibrary:Destroy()
 	hideHotkeyConnection:Disconnect()
 	Rayfield:Destroy()
-	KeyUI:Destroy()
 end
 
 Topbar.ChangeSize.MouseButton1Click:Connect(function()
@@ -3882,53 +3881,53 @@ if useStudio then
 		MultipleOptions = false,
 		Flag = "Dropdown1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
 		Callback = function(Options)
-			Window.ModifyTheme(Options[1])
+			--Window.ModifyTheme(Options[1])
 			-- The function that takes place when the selected option is changed
 			-- The variable (Options) is a table of strings for the current selected options
 		end,
 	})
-	
-	
-	Window.ModifyTheme({
-		TextColor = Color3.fromRGB(50, 55, 60),
-		Background = Color3.fromRGB(240, 245, 250),
-		Topbar = Color3.fromRGB(215, 225, 235),
-		Shadow = Color3.fromRGB(200, 210, 220),
 
-		NotificationBackground = Color3.fromRGB(210, 220, 230),
-		NotificationActionsBackground = Color3.fromRGB(225, 230, 240),
 
-		TabBackground = Color3.fromRGB(200, 210, 220),
-		TabStroke = Color3.fromRGB(180, 190, 200),
-		TabBackgroundSelected = Color3.fromRGB(175, 185, 200),
-		TabTextColor = Color3.fromRGB(50, 55, 60),
-		SelectedTabTextColor = Color3.fromRGB(30, 35, 40),
+	--Window.ModifyTheme({
+	--	TextColor = Color3.fromRGB(50, 55, 60),
+	--	Background = Color3.fromRGB(240, 245, 250),
+	--	Topbar = Color3.fromRGB(215, 225, 235),
+	--	Shadow = Color3.fromRGB(200, 210, 220),
 
-		ElementBackground = Color3.fromRGB(210, 220, 230),
-		ElementBackgroundHover = Color3.fromRGB(220, 230, 240),
-		SecondaryElementBackground = Color3.fromRGB(200, 210, 220),
-		ElementStroke = Color3.fromRGB(190, 200, 210),
-		SecondaryElementStroke = Color3.fromRGB(180, 190, 200),
+	--	NotificationBackground = Color3.fromRGB(210, 220, 230),
+	--	NotificationActionsBackground = Color3.fromRGB(225, 230, 240),
 
-		SliderBackground = Color3.fromRGB(200, 220, 235),  -- Lighter shade
-		SliderProgress = Color3.fromRGB(70, 130, 180),
-		SliderStroke = Color3.fromRGB(150, 180, 220),
+	--	TabBackground = Color3.fromRGB(200, 210, 220),
+	--	TabStroke = Color3.fromRGB(180, 190, 200),
+	--	TabBackgroundSelected = Color3.fromRGB(175, 185, 200),
+	--	TabTextColor = Color3.fromRGB(50, 55, 60),
+	--	SelectedTabTextColor = Color3.fromRGB(30, 35, 40),
 
-		ToggleBackground = Color3.fromRGB(210, 220, 230),
-		ToggleEnabled = Color3.fromRGB(70, 160, 210),
-		ToggleDisabled = Color3.fromRGB(180, 180, 180),
-		ToggleEnabledStroke = Color3.fromRGB(60, 150, 200),
-		ToggleDisabledStroke = Color3.fromRGB(140, 140, 140),
-		ToggleEnabledOuterStroke = Color3.fromRGB(100, 120, 140),
-		ToggleDisabledOuterStroke = Color3.fromRGB(120, 120, 130),
+	--	ElementBackground = Color3.fromRGB(210, 220, 230),
+	--	ElementBackgroundHover = Color3.fromRGB(220, 230, 240),
+	--	SecondaryElementBackground = Color3.fromRGB(200, 210, 220),
+	--	ElementStroke = Color3.fromRGB(190, 200, 210),
+	--	SecondaryElementStroke = Color3.fromRGB(180, 190, 200),
 
-		DropdownSelected = Color3.fromRGB(220, 230, 240),
-		DropdownUnselected = Color3.fromRGB(200, 210, 220),
+	--	SliderBackground = Color3.fromRGB(200, 220, 235),  -- Lighter shade
+	--	SliderProgress = Color3.fromRGB(70, 130, 180),
+	--	SliderStroke = Color3.fromRGB(150, 180, 220),
 
-		InputBackground = Color3.fromRGB(220, 230, 240),
-		InputStroke = Color3.fromRGB(180, 190, 200),
-		PlaceholderColor = Color3.fromRGB(150, 150, 150)
-	})
+	--	ToggleBackground = Color3.fromRGB(210, 220, 230),
+	--	ToggleEnabled = Color3.fromRGB(70, 160, 210),
+	--	ToggleDisabled = Color3.fromRGB(180, 180, 180),
+	--	ToggleEnabledStroke = Color3.fromRGB(60, 150, 200),
+	--	ToggleDisabledStroke = Color3.fromRGB(140, 140, 140),
+	--	ToggleEnabledOuterStroke = Color3.fromRGB(100, 120, 140),
+	--	ToggleDisabledOuterStroke = Color3.fromRGB(120, 120, 130),
+
+	--	DropdownSelected = Color3.fromRGB(220, 230, 240),
+	--	DropdownUnselected = Color3.fromRGB(200, 210, 220),
+
+	--	InputBackground = Color3.fromRGB(220, 230, 240),
+	--	InputStroke = Color3.fromRGB(180, 190, 200),
+	--	PlaceholderColor = Color3.fromRGB(150, 150, 150)
+	--})
 
 	local Keybind = Tab:CreateKeybind({
 		Name = "Keybind Example",
@@ -3960,11 +3959,9 @@ if CEnabled and Main:FindFirstChild('Notice') then
 	TweenService:Create(Main.Notice.Title, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {TextTransparency = 0.1}):Play()
 end
 
-if not useStudio and cachedSettings.System.RayfieldAds.Value then
-	local success, result = pcall(function()
-		task.spawn(loadWithTimeout, "https://raw.githubusercontent.com/SiriusSoftwareLtd/Sirius/refs/heads/request/boost.lua")
-	end)
-end
+-- if not useStudio and cachedSettings.System.RayfieldAds.Value then
+-- 	task.spawn(loadWithTimeout, "https://raw.githubusercontent.com/SiriusSoftwareLtd/Sirius/refs/heads/request/boost.lua")
+-- end
 
 task.delay(4, function()
 	RayfieldLibrary.LoadConfiguration()
