@@ -3,29 +3,19 @@
 	Rayfield Interface Suite
 	by Sirius
 
-	shlex  | Designing + Programming
-	iRay   | Programming
-	Max    | Programming
-	Damian | Programming
-
-  --- and ---
-
-  RayfieldCustom-
-  by zombi.dev
-
-	zombi.dev | Programming
-  mestyr_ | Testing + Evaluation
-  catapult836498_21 | Testing
+	shlex | Designing + Programming
+	iRay  | Programming
+	Max   | Programming
 
 ]]
 
 if debugX then
-	warn('Initialising RayfieldCustom-')
+	warn('Initialising Rayfield')
 end
 
 local function getService(name)
-	local service = game:GetService(name)
-	return if cloneref then cloneref(service) else service
+    local service = game:GetService(name)
+    return if cloneref then cloneref(service) else service
 end
 
 -- Loads and executes a function hosted on a remote URL. Cancels the request if the requested URL takes too long to respond.
@@ -80,14 +70,10 @@ end
 
 local requestsDisabled = true --getgenv and getgenv().DISABLE_RAYFIELD_REQUESTS
 local InterfaceBuild = '3K3W'
-local Release = "Build 1.68"
-local CustomVersion = "17"
-print(Release.." ("..InterfaceBuild..") - RC- Version "..CustomVersion)
-
+local Release = "Build 1.672"
 local RayfieldFolder = "Rayfield"
 local ConfigurationFolder = RayfieldFolder.."/Configurations"
-local ConfigurationExtension = ".rfldm"
--- setup default settings
+local ConfigurationExtension = ".rfld"
 local settingsTable = {
 	General = {
 		-- if needs be in order just make getSetting(name)
@@ -97,55 +83,26 @@ local settingsTable = {
 
 	},
 	System = {
-		RayfieldAds = {Type = 'toggle', Value = false, Name = 'Rayfield Ads'},
-		usageAnalytics = {Type = 'toggle', Value = false, Name = 'Anonymised Analytics'},
+		usageAnalytics = {Type = 'toggle', Value = true, Name = 'Anonymised Analytics'},
 	}
 }
-
--- Settings that have been overridden by the developer. These will not be saved to the user's configuration file
--- Overridden settings always take precedence over settings in the configuration file, and are cleared if the user changes the setting in the UI
-local overriddenSettings: { [string]: any } = {} -- For example, overriddenSettings["System.rayfieldOpen"] = "J"
-local function overrideSetting(category: string, name: string, value: any)
-	overriddenSettings[`{category}.{name}`] = value
-end
-
-local function getSetting(category: string, name: string): any
-	if overriddenSettings[`{category}.{name}`] ~= nil then
-		return overriddenSettings[`{category}.{name}`]
-	elseif settingsTable[category][name] ~= nil then
-		return settingsTable[category][name].Value
-	end
-end
-
--- If requests/analytics have been disabled by developer, set the user-facing setting to false as well
-if requestsDisabled then
-	overrideSetting("System", "usageAnalytics", false)
-end
 
 local HttpService = getService('HttpService')
 local RunService = getService('RunService')
 
 -- Environment Check
 local useStudio = RunService:IsStudio() or false
-local settingsCreated = false
-local settingsInitialized = false -- Whether the UI elements in the settings page have been set to the proper values
-local cachedSettings
-local prompt = useStudio and require(script.Parent.prompt) or loadWithTimeout('https://raw.githubusercontent.com/SiriusSoftwareLtd/Sirius/refs/heads/request/prompt.lua')
-local requestFunc = (syn and syn.request) or (fluxus and fluxus.request) or (http and http.request) or http_request or request
 
--- Validate prompt loaded correctly
-if not prompt and not useStudio then
-	warn("Failed to load prompt library, using fallback")
-	prompt = {
-		create = function() end -- No-op fallback
-	}
-end
+local settingsCreated = false
+local cachedSettings
+--local prompt = useStudio and require(script.Parent.prompt) or loadWithTimeout('https://raw.githubusercontent.com/SiriusSoftwareLtd/Sirius/refs/heads/request/prompt.lua')
+local request = (syn and syn.request) or (fluxus and fluxus.request) or (http and http.request) or http_request or request
 
 
 
 local function loadSettings()
 	local file = nil
-
+	
 	local success, result =	pcall(function()
 		task.spawn(function()
 			if isfolder and isfolder(RayfieldFolder) then
@@ -185,139 +142,6 @@ local function loadSettings()
 						for settingName, setting in pairs(settingCategory) do
 							if file[categoryName][settingName] then
 								setting.Value = file[categoryName][settingName].Value
-								setting.Element:Set(getSetting(categoryName, settingName))
-							end
-						end
-					end
-				end
-			end
-			settingsInitialized = true
-		end)
-	end)
-
-	if not success then 
-		if writefile then
-			warn('RayfieldCustom- had an issue accessing configuration saving capability.')
-		end
-	end
-end
-
-if debugX then
-	warn('Now Loading Settings Configuration')
-end
-
-loadSettings()
-
-if debugX then
-	warn('Settings Loaded')
-end
-
-local analyticsLib
-local sendReport = function(ev_n, sc_n) warn("Failed to load report function") end
-if not (settingsTable.System.usageAnalytics or requestsDisabled) then
-	if debugX then
-		warn('Querying Settings for Reporter Information')
-	end	
-	analyticsLib = loadWithTimeout("https://analytics.sirius.menu/script")
-	if not analyticsLib then
-		warn("Failed to load analytics reporter")
-		analyticsLib = nil
-	elseif analyticsLib and type(analyticsLib.load) == "function" then
-		analyticsLib:load()
-	else
-		warn("Analytics library loaded but missing load function")
-		analyticsLib = nil
-	end
-	sendReport = function(ev_n, sc_n)
-		if not (type(analyticsLib) == "table" and type(analyticsLib.isLoaded) == "function" and analyticsLib:isLoaded()) then
-			warn("Analytics library not loaded")
-			return
-		end
-		if useStudio then
-			print('Sending Analytics')
-		else
-			if debugX then warn('Reporting Analytics') end
-			analyticsLib:report(
-				{
-					["name"] = ev_n,
-					["script"] = {["name"] = sc_n, ["version"] = Release}
-				},
-				{
-					["version"] = InterfaceBuild
-				}
-			)
-			if debugX then warn('Finished Report') end
-		end
-	end
-	if cachedSettings and (#cachedSettings == 0 or (cachedSettings.System and cachedSettings.System.usageAnalytics and cachedSettings.System.usageAnalytics.Value)) then
-		sendReport("execution", "Rayfield")
-	elseif not cachedSettings then
-		sendReport("execution", "Rayfield")
-	end
-end
-
-local promptUser = 2
-
--- why the second time???
-if promptUser == 1 and prompt and type(prompt.create) == "function" then
-	prompt.create(
-		'Be cautious when running scripts',
-	    [[Please be careful when running scripts from unknown developers. This script has already been ran.
-
-<font transparency='0.3'>Some scripts may steal your items or in-game goods.</font>]],
-		'Okay',
-		'',
-		function()
-
-		end
-	)
-end
-
-if debugX then
-	warn('Moving on to continue initialisation')
-end
-
-
-local function loadSettings()
-	local file = nil
-	
-	local success, result =	pcall(function()
-		task.spawn(function()
-			if isfolder and isfolder(RayfieldFolder) then
-				if isfile and isfile(RayfieldFolder..'/settings'..ConfigurationExtension) then
-					file = readfile(RayfieldFolder..'/settings'..ConfigurationExtension)
-				end
-			end
-
-			-- for debug in studio
-			if useStudio then
-				file = settingsTable
-			end
-
-
-			if file then
-				local success, decodedFile = pcall(function() return HttpService:JSONDecode(file) end)
-				if success then
-					file = decodedFile
-				else
-					file = settingsTable
-				end
-			else
-				file = settingsTable
-			end
-
-
-			if not settingsCreated then 
-				cachedSettings = file
-				return
-			end
-
-			if file ~= {} then
-				for categoryName, settingCategory in pairs(settingsTable) do
-					if file[categoryName] then
-						for settingName, setting in pairs(settingCategory) do
-							if file[categoryName][settingName] then
-								setting.Value = file[categoryName][settingName].Value
 								setting.Element:Set(setting.Value)
 							end
 						end
@@ -329,7 +153,7 @@ local function loadSettings()
 	
 	if not success then 
 		if writefile then
-			warn('RayfieldCustom- had an issue accessing configuration saving capability.')
+			warn('Rayfield had an issue accessing configuration saving capability.')
 		end
 	end
 end
@@ -344,34 +168,31 @@ if debugX then
 	warn('Settings Loaded')
 end
 
--- shame that this is by default commented out
-if not cachedSettings or not cachedSettings.System or not cachedSettings.System.usageAnalytics then
-	local fileFunctionsAvailable = isfile and writefile and readfile
+--if not cachedSettings or not cachedSettings.System or not cachedSettings.System.usageAnalytics then
+--	local fileFunctionsAvailable = isfile and writefile and readfile
 
-	if not fileFunctionsAvailable and not useStudio then
--- 		warn('Rayfield Interface Suite | Sirius Analytics:\n\n\nAs you don\'t have file functionality with your executor, we are unable to save whether you want to opt in or out to analytics.\nIf you do not want to take part in anonymised usage statistics, let us know in our Discord at sirius.menu/discord and we will manually opt you out.')
--- 		analytics = true	
--- 	else
-    analytics = 0
-		prompt.create(
-			'Help us improve',
-	            [[Would you like to allow Sirius to collect usage statistics?
+--	if not fileFunctionsAvailable and not useStudio then
+--		warn('Rayfield Interface Suite | Sirius Analytics:\n\n\nAs you don\'t have file functionality with your executor, we are unable to save whether you want to opt in or out to analytics.\nIf you do not want to take part in anonymised usage statistics, let us know in our Discord at sirius.menu/discord and we will manually opt you out.')
+--		analytics = true	
+--	else
+--		prompt.create(
+--			'Help us improve',
+--	            [[Would you like to allow Sirius to collect usage statistics?
 
-<font transparency='0.4'>No data is linked to you or your personal activity.</font>]],
-			'Yes!',
-			'Nope',
-			function(result)
-				settingsTable.System.usageAnalytics.Value = result
-				analytics = result
-        requestsDisabled = result
-			end
-		)
-	end
+--<font transparency='0.4'>No data is linked to you or your personal activity.</font>]],
+--			'Continue',
+--			'Cancel',
+--			function(result)
+--				settingsTable.System.usageAnalytics.Value = result
+--				analytics = result
+--			end
+--		)
+--	end
 
-	repeat task.wait() until analytics ~= 0
-end
+--	repeat task.wait() until analytics ~= nil
+--end
 
-if not (settingsTable.System.usageAnalytics or requestsDisabled) then
+if not requestsDisabled then
 	if debugX then
 		warn('Querying Settings for Reporter Information')
 	end
@@ -802,7 +623,6 @@ local buildAttempts = 0
 local correctBuild = false
 local warned
 local globalLoaded
-local rayfieldDestroyed = false -- True when RayfieldLibrary:Destroy() is called
 
 repeat
 	if Rayfield:FindFirstChild('Build') and Rayfield.Build.Value == InterfaceBuild then
@@ -868,13 +688,6 @@ end
 
 -- Object Variables
 
--- window inactive thing
-local Inactive = false
--- key combo kill thing
-local Key1, Key1Held = Enum.KeyCode.LeftControl, false
-local Key2, Key2Held = Enum.KeyCode.LeftShift, false
-local Key3, Key3Held = Enum.KeyCode.R, false
--- ok actual rayfield's stuff
 local Main = Rayfield.Main
 local MPrompt = Rayfield:FindFirstChild('Prompt')
 local Topbar = Main.Topbar
@@ -1337,10 +1150,10 @@ local function Hide(notify: boolean?)
 
 	Debounce = true
 	if notify then
-		if useMobilePrompt then
-			RayfieldLibrary:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping 'Show'.", Duration = 7, Image = 4400697855})
+		if useMobilePrompt then 
+			RayfieldLibrary:Notify({Title = "Interface Hidden", Content = "The interface has been hidden, you can unhide the interface by tapping 'Show Rayfield'.", Duration = 7, Image = 4400697855})
 		else
-			RayfieldLibrary:Notify({Title = "Interface Hidden", Content = `The interface has been hidden, you can unhide the interface by tapping {getSetting("General", "rayfieldOpen")}.`, Duration = 7, Image = 4400697855})
+			RayfieldLibrary:Notify({Title = "Interface Hidden", Content = `The interface has been hidden, you can unhide the interface by tapping {settingsTable.General.rayfieldOpen.Value or 'K'}.`, Duration = 7, Image = 4400697855})
 		end
 	end
 
@@ -1621,11 +1434,7 @@ local function Minimise()
 	Debounce = false
 end
 
-local function updateSettings() -- maintains compatibility with older scripts
-     saveSettings()
-end
-    
-local function saveSettings() -- Save settings to config file
+local function updateSettings()
 	local encoded
 	local success, err = pcall(function()
 		encoded = HttpService:JSONEncode(settingsTable)
@@ -1641,15 +1450,6 @@ local function saveSettings() -- Save settings to config file
 			writefile(RayfieldFolder..'/settings'..ConfigurationExtension, encoded)
 		end
 	end
-end
-
-local function updateSetting(category: string, setting: string, value: any)
-	if not settingsInitialized then
-		return
-	end
-	settingsTable[category][setting].Value = value
-	overriddenSettings[`{category}.{setting}`] = nil -- If user changes an overriden setting, remove the override
-	saveSettings()
 end
 
 local function createSettings(window)
@@ -1674,7 +1474,7 @@ local function createSettings(window)
 	for categoryName, settingCategory in pairs(settingsTable) do
 		newTab:CreateSection(categoryName)
 
-		for settingName, setting in pairs(settingCategory) do
+		for _, setting in pairs(settingCategory) do
 			if setting.Type == 'input' then
 				setting.Element = newTab:CreateInput({
 					Name = setting.Name,
@@ -1683,7 +1483,8 @@ local function createSettings(window)
 					Ext = true,
 					RemoveTextAfterFocusLost = setting.ClearOnFocus,
 					Callback = function(Value)
-						updateSetting(categoryName, settingName, Value)
+						setting.Value = Value
+						updateSettings()
 					end,
 				})
 			elseif setting.Type == 'toggle' then
@@ -1692,7 +1493,8 @@ local function createSettings(window)
 					CurrentValue = setting.Value,
 					Ext = true,
 					Callback = function(Value)
-						updateSetting(categoryName, settingName, Value)
+						setting.Value = Value
+						updateSettings()
 					end,
 				})
 			elseif setting.Type == 'bind' then
@@ -1703,7 +1505,8 @@ local function createSettings(window)
 					Ext = true,
 					CallOnChange = true,
 					Callback = function(Value)
-						updateSetting(categoryName, settingName, Value)
+						setting.Value = Value
+						updateSettings()
 					end,
 				})
 			end
@@ -1712,17 +1515,12 @@ local function createSettings(window)
 
 	settingsCreated = true
 	loadSettings()
-	saveSettings()
-end
-
--- MAKE SURE YOU KNOW WHAT YOU ARE DOING WHEN USING THIS FUNCTION!
-function RayfieldLibrary:AssignSettings(Settings)
-	settingsTable = Settings
 	updateSettings()
 end
 
+
+
 function RayfieldLibrary:CreateWindow(Settings)
-  --print('creating window')
 	if Rayfield:FindFirstChild('Loading') then
 		if getgenv and not getgenv().rayfieldCached then
 			Rayfield.Enabled = true
@@ -1742,30 +1540,10 @@ function RayfieldLibrary:CreateWindow(Settings)
 			end)
 	end
 
-	if Settings.ToggleUIKeybind then -- Can either be a string or an Enum.KeyCode
-		local keybind = Settings.ToggleUIKeybind
-		if type(keybind) == "string" then
-			keybind = string.upper(keybind)
-			assert(pcall(function()
-				return Enum.KeyCode[keybind]
-			end), "ToggleUIKeybind must be a valid KeyCode")
-			overrideSetting("General", "rayfieldOpen", keybind)
-		elseif typeof(keybind) == "EnumItem" then
-			assert(keybind.EnumType == Enum.KeyCode, "ToggleUIKeybind must be a KeyCode enum")
-			overrideSetting("General", "rayfieldOpen", keybind.Name)
-		else
-			error("ToggleUIKeybind must be a string or KeyCode enum")
-		end
-	end
-
 	if isfolder and not isfolder(RayfieldFolder) then
 		makefolder(RayfieldFolder)
 	end
 
-	-- Attempt to report an event to analytics
-	if not (settingsTable.System.usageAnalytics or requestsDisabled) then
-		sendReport("window_created", Settings.Name or "Unknown")
-	end
 	local Passthrough = false
 	Topbar.Title.Text = Settings.Name
 
@@ -1778,37 +1556,12 @@ function RayfieldLibrary:CreateWindow(Settings)
 	LoadingFrame.Title.TextTransparency = 1
 	LoadingFrame.Subtitle.TextTransparency = 1
 
-	if Settings.ShowText then
-		MPrompt.Title.Text = 'Show '..Settings.ShowText
-	end
-
 	LoadingFrame.Version.TextTransparency = 1
 	LoadingFrame.Title.Text = Settings.LoadingTitle or "Rayfield"
 	LoadingFrame.Subtitle.Text = Settings.LoadingSubtitle or "Interface Suite"
 
-	if Settings.LoadingTitle ~= "Rayfield Interface Suite" and cachedSettings.System.RayfieldAds.Value then
+	if Settings.LoadingTitle ~= "Rayfield Interface Suite" then
 		LoadingFrame.Version.Text = "Rayfield UI"
-	else
-		LoadingFrame.Version.Text = ""
-	end
-
-	if Settings.Icon and Settings.Icon ~= 0 and Topbar:FindFirstChild('Icon') then
-		Topbar.Icon.Visible = true
-		Topbar.Title.Position = UDim2.new(0, 47, 0.5, 0)
-
-		if Settings.Icon then
-			if typeof(Settings.Icon) == 'string' and Icons then
-				local asset = getIcon(Settings.Icon)
-
-				Topbar.Icon.Image = 'rbxassetid://'..asset.id
-				Topbar.Icon.ImageRectOffset = asset.imageRectOffset
-				Topbar.Icon.ImageRectSize = asset.imageRectSize
-			else
-				Topbar.Icon.Image = getAssetUri(Settings.Icon)
-			end
-		else
-			Topbar.Icon.Image = "rbxassetid://" .. 0
-		end
 	end
 
 	if Settings.Icon and Settings.Icon ~= 0 and Topbar:FindFirstChild('Icon') then
@@ -1853,7 +1606,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 	Elements.Visible = false
 	LoadingFrame.Visible = true
 
-	if not Settings.DisableRayfieldPrompts and cachedSettings.System.RayfieldAds.Value then
+	if not Settings.DisableRayfieldPrompts then
 		task.spawn(function()
 			while true do
 				task.wait(math.random(180, 600))
@@ -1900,15 +1653,15 @@ function RayfieldLibrary:CreateWindow(Settings)
 		end
 	end
 
-	if Settings.Discord and Settings.Discord.Enabled and not useStudio then
+	if Settings.Discord and not useStudio then
 		if isfolder and not isfolder(RayfieldFolder.."/Discord Invites") then
 			makefolder(RayfieldFolder.."/Discord Invites")
 		end
 
 		if isfile and not isfile(RayfieldFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension) then
-			if requestFunc then
+			if request then
 				pcall(function()
-					requestFunc({
+					request({
 						Url = 'http://127.0.0.1:6463/rpc?v=1',
 						Method = 'POST',
 						Headers = {
@@ -1925,7 +1678,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 			end
 
 			if Settings.Discord.RememberJoins then -- We do logic this way so if the developer changes this setting, the user still won't be prompted, only new users
-                                             -- ok cool -- zombi.dev
 				writefile(RayfieldFolder.."/Discord Invites".."/"..Settings.Discord.Invite..ConfigurationExtension,"Rayfield RememberJoins is true for this invite, this invite will not ask you to join again")
 			end
 		end
@@ -2296,10 +2048,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 			Button.Interact.MouseButton1Click:Connect(function()
 				local Success, Response = pcall(ButtonSettings.Callback)
-				-- Prevents animation from trying to play if the button's callback called RayfieldLibrary:Destroy()
-				if rayfieldDestroyed then
-					return
-				end
 				if not Success then
 					TweenService:Create(Button, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {BackgroundColor3 = Color3.fromRGB(85, 0, 0)}):Play()
 					TweenService:Create(Button.ElementIndicator, TweenInfo.new(0.6, Enum.EasingStyle.Exponential), {TextTransparency = 1}):Play()
@@ -2481,9 +2229,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 				local r,g,b = math.floor((h*255)+0.5),math.floor((s*255)+0.5),math.floor((v*255)+0.5)
 				ColorPickerSettings.Color = Color3.fromRGB(r,g,b)
 				if not ColorPickerSettings.Ext then
-          -- huh?
-					SaveConfiguration()
-					--SaveConfiguration(ColorPickerSettings.Flag..'\n'..tostring(ColorPickerSettings.Color))
+					SaveConfiguration(ColorPickerSettings.Flag..'\n'..tostring(ColorPickerSettings.Color))
 				end
 			end)
 			--RGB
@@ -2504,9 +2250,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 				local r,g,b = math.floor((h*255)+0.5),math.floor((s*255)+0.5),math.floor((v*255)+0.5)
 				ColorPickerSettings.Color = Color3.fromRGB(r,g,b)
 				if not ColorPickerSettings.Ext then
-          -- why?
-					SaveConfiguration(ColorPickerSettings.Flag..'\n'..tostring(ColorPickerSettings.Color))
-					--SaveConfiguration()
+					SaveConfiguration()
 				end
 			end
 			ColorPicker.RGB.RInput.InputBox.FocusLost:connect(function()
@@ -2649,12 +2393,11 @@ function RayfieldLibrary:CreateWindow(Settings)
 		end
 
 		-- Label
-		function Tab:CreateLabel(LabelText : string, LabelFontSize: number, Icon: number, Color : Color3, IgnoreTheme : boolean)
+		function Tab:CreateLabel(LabelText : string, Icon: number, Color : Color3, IgnoreTheme : boolean)
 			local LabelValue = {}
 
 			local Label = Elements.Template.Label:Clone()
 			Label.Title.Text = LabelText
-			Label.Title.TextSize = LabelFontSize
 			Label.Visible = true
 			Label.Parent = TabPage
 
@@ -2734,10 +2477,6 @@ function RayfieldLibrary:CreateWindow(Settings)
 
 					Label.Icon.Visible = true
 				end
-			end
-          
-			function LabelValue:Destroy()
-				Label:Destroy()
 			end
 
 			Rayfield.Main:GetPropertyChangedSignal('BackgroundColor3'):Connect(function()
@@ -3221,7 +2960,7 @@ function RayfieldLibrary:CreateWindow(Settings)
 			end)
 			Keybind.KeybindFrame.KeybindBox.FocusLost:Connect(function()
 				CheckingForKey = false
-				if Keybind.KeybindFrame.KeybindBox.Text == nil or Keybind.KeybindFrame.KeybindBox.Text == "" then
+				if Keybind.KeybindFrame.KeybindBox.Text == nil or "" then
 					Keybind.KeybindFrame.KeybindBox.Text = KeybindSettings.CurrentKeybind
 					if not KeybindSettings.Ext then
 						SaveConfiguration()
@@ -3744,9 +3483,9 @@ function RayfieldLibrary:CreateWindow(Settings)
 	local success, result = pcall(function()
 		createSettings(Window)
 	end)
-
-	if not success then warn('RayfieldCustom- had an issue creating settings.') end -- why the fuck was this a merge conflict (before i changed it to RayfieldCustom-)
-      
+	
+	if not success then warn('Rayfield had an issue creating settings.') end
+	
 	return Window
 end
 
@@ -3771,7 +3510,6 @@ end
 
 local hideHotkeyConnection -- Has to be initialized here since the connection is made later in the script
 function RayfieldLibrary:Destroy()
-	rayfieldDestroyed = true
 	hideHotkeyConnection:Disconnect()
 	Rayfield:Destroy()
 end
@@ -3867,12 +3605,8 @@ Topbar.Hide.MouseButton1Click:Connect(function()
 	setVisibility(Hidden, not useMobileSizing)
 end)
 
--- function KeyComboAct()
--- 	RayfieldLibrary:Destroy()
--- end
-    
 hideHotkeyConnection = UserInputService.InputBegan:Connect(function(input, processed)
-	if (input.KeyCode == Enum.KeyCode[getSetting("General", "rayfieldOpen")]) and not processed then
+	if (input.KeyCode == Enum.KeyCode[settingsTable.General.rayfieldOpen.Value or 'K'] and not processed) then
 		if Debounce then return end
 		if Hidden then
 			Hidden = false
@@ -3881,33 +3615,6 @@ hideHotkeyConnection = UserInputService.InputBegan:Connect(function(input, proce
 			Hidden = true
 			Hide()
 		end
-	end
-	if (input.KeyCode == Key1 and not processed) then
-		Key1Held = true
-	end
-	if (input.KeyCode == Key2 and not processed) then
-		Key2Held = true
-	end
-	if (input.KeyCode == Key3 and not processed) then
-		Key3Held = true
-	end
-	if (Key1Held and Key2Held and Key3Held and not processed) then
-		KeyComboAct()
-	end
-end)
-
-UserInputService.InputEnded:Connect(function(input, processed)
-	if (input.KeyCode == Key1 and not processed) then
-		Key1Held = false
-	end
-	if (input.KeyCode == Key2 and not processed) then
-		Key2Held = false
-	end
-	if (input.KeyCode == Key3 and not processed) then
-		Key3Held = false
-	end
-	if (Key1Held and Key2Held and Key3Held and not processed) then
--- 		KeyComboAct()
 	end
 end)
 
@@ -3981,6 +3688,7 @@ end
 if useStudio then
 	-- run w/ studio
 	-- Feel free to place your own script here to see how it'd work in Roblox Studio before running it on your execution software.
+
 
 	local Window = RayfieldLibrary:CreateWindow({
 		Name = "Rayfield Example Window",
@@ -4127,6 +3835,7 @@ if useStudio then
 		end,
 	})
 
+
 	--Window.ModifyTheme({
 	--	TextColor = Color3.fromRGB(50, 55, 60),
 	--	Background = Color3.fromRGB(240, 245, 250),
@@ -4167,7 +3876,7 @@ if useStudio then
 	--	InputStroke = Color3.fromRGB(180, 190, 200),
 	--	PlaceholderColor = Color3.fromRGB(150, 150, 150)
 	--})
-      
+
 	local Keybind = Tab:CreateKeybind({
 		Name = "Keybind Example",
 		CurrentKeybind = "Q",
@@ -4198,11 +3907,9 @@ if CEnabled and Main:FindFirstChild('Notice') then
 	TweenService:Create(Main.Notice.Title, TweenInfo.new(0.5, Enum.EasingStyle.Exponential), {TextTransparency = 0.1}):Play()
 end
 
--- AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA why :(
--- why what -- zombi.dev
-if not useStudio and cachedSettings.System.RayfieldAds.Value then
-	task.spawn(loadWithTimeout, "https://raw.githubusercontent.com/SiriusSoftwareLtd/Sirius/refs/heads/request/boost.lua")
-end
+-- if not useStudio then
+-- 	task.spawn(loadWithTimeout, "https://raw.githubusercontent.com/SiriusSoftwareLtd/Sirius/refs/heads/request/boost.lua")
+-- end
 
 task.delay(4, function()
 	RayfieldLibrary.LoadConfiguration()
@@ -4216,4 +3923,3 @@ task.delay(4, function()
 end)
 
 return RayfieldLibrary
-
